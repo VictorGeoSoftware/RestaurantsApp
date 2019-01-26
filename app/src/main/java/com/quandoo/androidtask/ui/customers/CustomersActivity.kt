@@ -1,4 +1,4 @@
-package com.quandoo.androidtask.customers
+package com.quandoo.androidtask.ui.customers
 
 import android.content.Context
 import android.content.Intent
@@ -7,16 +7,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.quandoo.androidtask.utils.Logger
 import com.quandoo.androidtask.R
-import com.quandoo.androidtask.api.Customer
-import com.quandoo.androidtask.api.Reservation
-import com.quandoo.androidtask.api.RestaurantService
-import com.quandoo.androidtask.api.Table
-import com.quandoo.androidtask.tables.TablesActivity
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.schedulers.Schedulers
+import com.quandoo.androidtask.data.models.Customer
+import com.quandoo.androidtask.data.models.Reservation
+import com.quandoo.androidtask.data.models.Table
+import com.quandoo.androidtask.ui.tables.TablesActivity
 import kotlinx.android.synthetic.main.activity_customers.*
-import kotlinx.android.synthetic.main.table_cell.*
 import java.lang.RuntimeException
 
 class CustomersActivity : AppCompatActivity(), Logger {

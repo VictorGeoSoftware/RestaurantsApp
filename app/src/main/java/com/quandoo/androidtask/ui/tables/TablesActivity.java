@@ -1,20 +1,19 @@
-package com.quandoo.androidtask.tables;
+package com.quandoo.androidtask.ui.tables;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.quandoo.androidtask.api.Customer;
-import com.quandoo.androidtask.customers.CustomersActivity;
+import com.quandoo.androidtask.data.models.Customer;
+import com.quandoo.androidtask.ui.customers.CustomersActivity;
 import com.quandoo.androidtask.utils.AppStatus;
 import com.quandoo.androidtask.utils.Logger;
 import com.quandoo.androidtask.R;
-import com.quandoo.androidtask.api.Reservation;
+import com.quandoo.androidtask.data.models.Reservation;
 import com.quandoo.androidtask.api.RestaurantService;
-import com.quandoo.androidtask.api.Table;
+import com.quandoo.androidtask.data.models.Table;
 import com.quandoo.androidtask.utils.PersistanceUtil;
 
 import org.jetbrains.annotations.NotNull;
@@ -86,53 +85,53 @@ public class TablesActivity extends AppCompatActivity implements Logger {
 
 
         // FIXME : >:) Muhahahahaha
-        RestaurantService restaurantService = new RestaurantService.Creator().create();
-        Single.zip(restaurantService.getTables(), restaurantService.getCustomers(), (tables1, customers1) -> {
-            tables = tables1;
-            customers = customers1;
-            writeCustomersToFile(customers1);
-            return tables1;
-        }).zipWith(restaurantService.getReservations(), (o, reservations1) -> reservations1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new SingleObserver<List<Reservation>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(List<Reservation> value) {
-                        reservations = value;
-
-                        // FIXME : >:) Muhahahahaha
-                        reservations.forEach(reservation -> {
-                            tables.forEach(table -> {
-                                //find table from reservation
-                                if (table.getId() == reservation.getTableId()) {
-                                    customers.forEach(customer -> {
-                                        //find user from reservation
-                                        if (customer.getId() == reservation.getUserId()) {
-                                            //mark table as reserved
-                                            table.reservedBy = customer.getFirstName() + " " + customer.getLastName();
-                                        }
-                                    });
-                                }
-                            });
-                        });
-
-                        rv.setAdapter(new TablesRvAdapter(tables,
-                                TablesActivity.this::tablesClickListener));
-
-                        syncTables();
-                        syncReservations(reservations);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        log(e.getLocalizedMessage());
-                    }
-                });
+//        RestaurantService restaurantService = new RestaurantService.Creator().create();
+//        Single.zip(restaurantService.getTables(), restaurantService.getCustomers(), (tables1, customers1) -> {
+//            tables = tables1;
+//            customers = customers1;
+//            writeCustomersToFile(customers1);
+//            return tables1;
+//        }).zipWith(restaurantService.getReservations(), (o, reservations1) -> reservations1)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeWith(new SingleObserver<List<Reservation>>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(List<Reservation> value) {
+//                        reservations = value;
+//
+//                        // FIXME : >:) Muhahahahaha
+//                        reservations.forEach(reservation -> {
+//                            tables.forEach(table -> {
+//                                //find table from reservation
+//                                if (table.getId() == reservation.getTableId()) {
+//                                    customers.forEach(customer -> {
+//                                        //find user from reservation
+//                                        if (customer.getId() == reservation.getUserId()) {
+//                                            //mark table as reserved
+//                                            table.setReservedBy(customer.getFirstName() + " " + customer.getLastName());
+//                                        }
+//                                    });
+//                                }
+//                            });
+//                        });
+//
+//                        rv.setAdapter(new TablesRvAdapter(tables,
+//                                TablesActivity.this::tablesClickListener));
+//
+//                        syncTables();
+//                        syncReservations(reservations);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        log(e.getLocalizedMessage());
+//                    }
+//                });
 
     }
 
@@ -147,14 +146,14 @@ public class TablesActivity extends AppCompatActivity implements Logger {
 
     private void tablesClickListener(Table clickedTable) {
         //show dialog for reserved table
-        if (clickedTable.reservedBy != null) {
+        if (clickedTable.getReservedBy() != null) {
 
             //show dialog that removes the reservation
             AlertDialog.Builder builder = new AlertDialog.Builder(TablesActivity.this);
             builder.setMessage("Do you want to free the table?").setPositiveButton("Yes", (dialog, which) -> {
 
                 //Free table
-                clickedTable.reservedBy = null;
+                clickedTable.setReservedBy(null);
                 syncTables();
 
             }).setNegativeButton("No", null).show();

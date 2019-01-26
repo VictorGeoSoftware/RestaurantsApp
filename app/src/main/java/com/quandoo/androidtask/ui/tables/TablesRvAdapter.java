@@ -1,4 +1,4 @@
-package com.quandoo.androidtask.tables;
+package com.quandoo.androidtask.ui.tables;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.quandoo.androidtask.api.Customer;
+import com.quandoo.androidtask.data.models.Customer;
 import com.quandoo.androidtask.utils.Logger;
 import com.quandoo.androidtask.R;
-import com.quandoo.androidtask.api.Table;
+import com.quandoo.androidtask.data.models.Table;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -48,12 +48,12 @@ public class TablesRvAdapter extends RecyclerView.Adapter<TablesRvAdapter.TableV
         viewHolder.tableId.setText("" + table.getId());
 
         //TODO : Set name and color depending on reservation status
-        if (table.reservedBy != null) {
-            viewHolder.reservingCustomerName.setText(table.reservedBy);
+        if (table.getReservedBy() != null) {
+            viewHolder.reservingCustomerName.setText(table.getReservedBy());
             viewHolder.reservingCustomerName.setTextColor(Color.RED);
 
             //load reserving user image
-            Picasso.get().load(findUserImage(table.reservedBy)).into(viewHolder.avatarImage);
+            Picasso.get().load(findUserImage(table.getReservedBy())).into(viewHolder.avatarImage);
             viewHolder.avatarImage.setVisibility(View.VISIBLE);
 
         } else {

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".tables.TablesActivity"
+            android:name=".ui.tables.TablesActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".customers.CustomersActivity"
+            android:name="com.quandoo.androidtask.ui.customers.CustomersActivity"
             android:label="Customers"></activity>
     </application>
 

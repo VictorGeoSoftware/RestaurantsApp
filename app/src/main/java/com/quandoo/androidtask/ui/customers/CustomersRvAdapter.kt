@@ -1,4 +1,4 @@
-package com.quandoo.androidtask.customers
+package com.quandoo.androidtask.ui.customers
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.quandoo.androidtask.utils.Logger
 import com.quandoo.androidtask.R
-import com.quandoo.androidtask.api.Customer
+import com.quandoo.androidtask.data.models.Customer
 import com.squareup.picasso.Picasso
 
 internal class CustomersRvAdapter(private val tables: List<Customer>,

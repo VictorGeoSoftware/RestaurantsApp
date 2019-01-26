@@ -13,7 +13,7 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.TextView
 import com.quandoo.androidtask.R
-import com.quandoo.androidtask.tables.TablesRvAdapter
+import com.quandoo.androidtask.ui.tables.TablesRvAdapter
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.Matcher

@@ -1,15 +1,12 @@
 package com.quandoo.androidtask.api;
 
-import com.quandoo.androidtask.BuildConfig;
+import com.quandoo.androidtask.data.models.Customer;
+import com.quandoo.androidtask.data.models.Reservation;
+import com.quandoo.androidtask.data.models.Table;
 
 import java.util.List;
 
 import io.reactivex.Single;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 
 public interface RestaurantService {
@@ -27,33 +24,33 @@ public interface RestaurantService {
     Single<List<Table>> getTables();
 
 
-    class Creator {
-        public RestaurantService create() {
-            OkHttpClient.Builder httpClient = createHttpClient();
-            Retrofit retrofit = new Retrofit.Builder()
-                    .client(httpClient.build())
-                    .addCallAdapterFactory(
-                            RxJava2CallAdapterFactory.create())
-                    .addConverterFactory(
-                            GsonConverterFactory.create())
-                    .baseUrl(BASE_URL)
-                    .build();
-
-            return retrofit.create(RestaurantService.class);
-        }
-
-        private OkHttpClient.Builder createHttpClient() {
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-            HttpLoggingInterceptor logging = createLoggingInterceptor();
-            // add logging as last interceptor for better debugging
-            httpClient.addInterceptor(logging);
-            return httpClient;
-        }
-
-        private HttpLoggingInterceptor createLoggingInterceptor() {
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-            return logging;
-        }
-    }
+//    class Creator {
+//        public RestaurantService create() {
+//            OkHttpClient.Builder httpClient = createHttpClient();
+//            Retrofit retrofit = new Retrofit.Builder()
+//                    .client(httpClient.build())
+//                    .addCallAdapterFactory(
+//                            RxJava2CallAdapterFactory.create())
+//                    .addConverterFactory(
+//                            GsonConverterFactory.create())
+//                    .baseUrl(BASE_URL)
+//                    .build();
+//
+//            return retrofit.create(RestaurantService.class);
+//        }
+//
+//        private OkHttpClient.Builder createHttpClient() {
+//            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+//            HttpLoggingInterceptor logging = createLoggingInterceptor();
+//            // add logging as last interceptor for better debugging
+//            httpClient.addInterceptor(logging);
+//            return httpClient;
+//        }
+//
+//        private HttpLoggingInterceptor createLoggingInterceptor() {
+//            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+//            logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+//            return logging;
+//        }
+//    }
 }
