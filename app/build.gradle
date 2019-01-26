@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -11,6 +12,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Environment variables
+        buildConfigField "String", "BASE_URL", rootProject.ext.base_url
     }
     buildTypes {
         release {
@@ -38,6 +42,17 @@ dependencies {
 
     /*Rx*/
     implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+
+    /*Dagger*/
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger:$dagger_version"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+    kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
+    testImplementation "com.google.dagger:dagger:$dagger_version"
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
+    androidTestImplementation "com.google.dagger:dagger:$dagger_version"
+    androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 

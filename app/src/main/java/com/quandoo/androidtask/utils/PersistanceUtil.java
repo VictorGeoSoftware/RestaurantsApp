@@ -24,7 +24,7 @@ public class PersistanceUtil {
 
     public static <T extends Serializable> void saveSerializable( T objectToSave, String fileName) {
         try {
-            FileOutputStream fileOutputStream = App.instance.openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream fileOutputStream = App.Companion.getInstance().openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(objectToSave);
@@ -49,7 +49,7 @@ public class PersistanceUtil {
         T objectToReturn = null;
 
         try {
-            FileInputStream fileInputStream = App.instance.openFileInput(fileName);
+            FileInputStream fileInputStream = App.Companion.getInstance().openFileInput(fileName);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             objectToReturn = (T) objectInputStream.readObject();
 
@@ -69,6 +69,6 @@ public class PersistanceUtil {
      */
 
     public static void removeSerializable(String filename) {
-        App.instance.deleteFile(filename);
+        App.Companion.getInstance().deleteFile(filename);
     }
 }

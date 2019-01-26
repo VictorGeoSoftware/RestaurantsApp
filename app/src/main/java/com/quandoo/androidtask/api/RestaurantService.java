@@ -11,14 +11,13 @@ import retrofit2.http.GET;
 
 public interface RestaurantService {
 
-    String BASE_URL = "https://s3-eu-west-1.amazonaws.com/";
+//    String BASE_URL = "https://s3-eu-west-1.amazonaws.com/";
 
     @GET("/quandoo-assessment/customers.json")
     Single<List<Customer>> getCustomers();
 
     @GET("/quandoo-assessment/reservations.json")
     Single<List<Reservation>> getReservations();
-
 
     @GET("/quandoo-assessment/tables.json")
     Single<List<Table>> getTables();
