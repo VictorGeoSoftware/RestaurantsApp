@@ -36,6 +36,10 @@ class TablesRvAdapter (
         return tables.size
     }
 
+    fun getAllItems(): List<Table> {
+        return tables
+    }
+
 
 
     class TableViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {

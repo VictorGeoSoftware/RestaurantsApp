@@ -11,11 +11,13 @@ import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
+import com.quandoo.androidtask.ui.tables.TablesActivity
+import com.quandoo.androidtask.ui.tables.TablesActivity.Companion.CUSTOMERS_FILE_NAME
+import com.quandoo.androidtask.ui.tables.TablesActivity.Companion.RESERVATIONS_FILE_NAME
+import com.quandoo.androidtask.ui.tables.TablesActivity.Companion.TABLES_FILE_NAME
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.first
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.withHolderTablesView
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.withRecyclerView
-import com.quandoo.androidtask.ui.tables.TablesActivity
-import com.quandoo.androidtask.ui.tables.TablesActivity.*
 import com.quandoo.androidtask.utils.PersistanceUtil
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
@@ -40,6 +42,7 @@ class AcceptanceTest {
     var mActivityTestRule: ActivityTestRule<TablesActivity> =
             ActivityTestRule(TablesActivity::class.java, true,
                     false)
+    lateinit var mTablesActivity: TablesActivity
 
     @Before
     fun setup() {
@@ -57,6 +60,7 @@ class AcceptanceTest {
 
         //launch activity using empty intent (no arguments needed for now ...)
         mActivityTestRule.launchActivity(Intent())
+        mTablesActivity = mActivityTestRule.activity
     }
 
     @After
@@ -81,7 +85,9 @@ class AcceptanceTest {
 
 
         //Hacky way of getting a position of desired element
-        val freeTablePosition = TablesActivity.tables.indexOfFirst { table -> table.reservedBy == null }
+
+//        val freeTablePosition = TablesActivity.tables.indexOfFirst { table -> table.reservedBy == null }
+        val freeTablePosition = mTablesActivity.getFirstAvailableTable()
 
         //WHEN :
 
@@ -128,8 +134,8 @@ class AcceptanceTest {
                 .perform(RecyclerViewActions.scrollToHolder(first(not(withHolderTablesView("Free")))))
 
 
-        //FIXME : Hacky way of getting a position of desired element
-        val reservedTablePosition = TablesActivity.tables.indexOfFirst { table -> table.reservedBy != null }
+//        val reservedTablePosition = TablesActivity.tables.indexOfFirst { table -> table.reservedBy != null }
+        val reservedTablePosition = mTablesActivity.getFirstReservedTable()
 
         //WHEN :
 

@@ -3,4 +3,7 @@
     <string name="some_error_happen">Some error happen</string>
     <string name="error_retrieving_customer_list">Error retrieving customer list</string>
     <string name="free">Free</string>
+    <string name="tables">Tables</string>
+    <string name="reserve_table_message">Do you want to free the table?</string>
+    <string name="yes">Yes</string>
 </resources>
