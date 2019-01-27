@@ -9,4 +9,5 @@ import com.quandoo.androidtask.data.Constants.Companion.TABLES_DB
 @Entity(tableName = TABLES_DB)
 class TableDto (
         @PrimaryKey @SerializedName("id") val id: Long,
-        @SerializedName("shape") val shape: String)
+        @SerializedName("shape") val shape: String,
+        @SerializedName("reservedBy") val reservedBy: String)

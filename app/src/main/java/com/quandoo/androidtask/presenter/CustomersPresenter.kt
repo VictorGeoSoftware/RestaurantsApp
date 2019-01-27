@@ -12,12 +12,20 @@ class CustomersPresenter @Inject constructor(
 
 
     interface CustomersView {
-
+        fun onTableReserved()
+        fun onTableReservingError()
     }
 
 
     fun reserveTable(selectedTableId: Long, customer: Customer) {
-        dataManager.reserveTable(selectedTableId, customer)
+        disposable.add(dataManager.reserveTable(selectedTableId, customer)
+                .observeOn(androidThread)
+                .subscribeOn(ioThread)
+                .subscribe({
+                    view?.onTableReserved()
+                }, {
+                    view?.onTableReservingError()
+                }))
     }
 
     override fun destroy() {

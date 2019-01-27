@@ -2,6 +2,7 @@ package com.quandoo.androidtask.dagger.modules
 
 import com.quandoo.androidtask.dagger.scopes.ViewScope
 import com.quandoo.androidtask.data.DataManager
+import com.quandoo.androidtask.data.room.AppDataBase
 import com.quandoo.androidtask.presenter.CustomersPresenter
 import com.quandoo.androidtask.presenter.TablesPresenter
 import dagger.Module

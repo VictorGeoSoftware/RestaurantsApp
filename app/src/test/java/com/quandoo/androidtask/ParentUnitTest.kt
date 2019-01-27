@@ -1,7 +1,11 @@
 package com.quandoo.androidtask
 
+import com.quandoo.androidtask.dagger.TestAppModule
+import com.quandoo.androidtask.dagger.TestDataBaseModule
 import com.quandoo.androidtask.dagger.TestNetworkModule
 import com.quandoo.androidtask.dagger.components.NetworkComponent
+import com.quandoo.androidtask.dagger.modules.AppModule
+import com.quandoo.androidtask.dagger.modules.DataBaseModule
 import com.quandoo.androidtask.dagger.modules.DataManagerModule
 import com.quandoo.androidtask.dagger.modules.NetworkModule
 import dagger.Component
@@ -13,7 +17,7 @@ abstract class ParentUnitTest {
 
 
     @Singleton
-    @Component(modules = [NetworkModule::class, DataManagerModule::class])
+    @Component(modules = [AppModule::class, NetworkModule::class, DataManagerModule::class, DataBaseModule::class])
     interface TestNetworkComponent: NetworkComponent {
         fun inject(target: CustomersPresenterTest)
     }
@@ -22,7 +26,9 @@ abstract class ParentUnitTest {
     @Before
     open fun setUp() {
         testNetworkComponent = DaggerParentUnitTest_TestNetworkComponent.builder()
+                .appModule(TestAppModule())
                 .networkModule(TestNetworkModule())
+                .dataBaseModule(TestDataBaseModule())
                 .build()
     }
 
