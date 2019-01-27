@@ -14,6 +14,8 @@ class CustomersPresenter @Inject constructor(
     interface CustomersView {
         fun onTableReserved()
         fun onTableReservingError()
+        fun onCustomerListRetrieved(customerList: List<Customer>)
+        fun onCustomerListError()
     }
 
 
@@ -28,10 +30,19 @@ class CustomersPresenter @Inject constructor(
                 }))
     }
 
+    fun getAllCustomers() {
+        disposable.add(dataManager.getAllCustomers()
+                .observeOn(androidThread)
+                .subscribeOn(ioThread)
+                .subscribe({
+                    view?.onCustomerListRetrieved(it)
+                }, {
+                    view?.onCustomerListError()
+                }))
+    }
+
     override fun destroy() {
         super.destroy()
         disposable.clear()
     }
-
-
 }

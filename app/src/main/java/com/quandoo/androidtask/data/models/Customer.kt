@@ -1,6 +1,7 @@
 package com.quandoo.androidtask.data.models
 
 import com.google.gson.annotations.SerializedName
+import com.quandoo.androidtask.data.room.customers.CustomerDto
 
 import java.io.Serializable
 

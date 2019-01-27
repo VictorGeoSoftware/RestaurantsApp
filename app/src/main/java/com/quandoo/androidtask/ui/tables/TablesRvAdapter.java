@@ -94,6 +94,8 @@ public class TablesRvAdapter extends RecyclerView.Adapter<TablesRvAdapter.TableV
         return tables.size();
     }
 
+
+
     public static class TableViewHolder extends RecyclerView.ViewHolder {
 
         final TextView tableId;

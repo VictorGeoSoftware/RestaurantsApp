@@ -8,15 +8,15 @@ import android.support.v7.widget.LinearLayoutManager
 import com.quandoo.androidtask.App
 import com.quandoo.androidtask.R
 import com.quandoo.androidtask.data.models.Customer
-import com.quandoo.androidtask.data.models.Reservation
 import com.quandoo.androidtask.data.models.Table
 import com.quandoo.androidtask.presenter.CustomersPresenter
-import com.quandoo.androidtask.ui.tables.TablesActivity
 import com.quandoo.androidtask.utils.Logger
+import com.quandoo.androidtask.utils.showRequestErrorMessage
 import kotlinx.android.synthetic.main.activity_customers.*
 import javax.inject.Inject
 
-class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.CustomerClickListener {
+class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.CustomerClickListener,
+        CustomersPresenter.CustomersView {
     companion object {
         const val EXTRA_TABLE_ID = "SELECTED_TABLE_ID"
         const val NON_EXISTING_TABLE_ID = -1L
@@ -43,7 +43,7 @@ class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.Custom
 
 
         recycler_view.layoutManager = LinearLayoutManager(this)
-        recycler_view.adapter = CustomersRvAdapter(TablesActivity.customers, this)
+        customersPresenter.getAllCustomers()
     }
 
     override fun onDestroy() {
@@ -53,20 +53,23 @@ class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.Custom
 
 
     override fun onCustomerClick(customer: Customer) {
-        log("customer clicked $customer")
-
-        // todo:: customersPresenter.reserveTable(selectedTableId, customer)
-        //Reserve table
-        TablesActivity.tables.find { table -> table.id == selectedTableId }?.let {
-            //create reservation
-            TablesActivity.reservations.add(Reservation(customer.id, it.id, customer.id + it.id))
-            it.reservedBy = customer.firstName + " " + customer.lastName //update object into TablesActivity.tables
-        }
-
-        TablesActivity.syncReservations(TablesActivity.reservations)
-
-        finish()
-
         customersPresenter.reserveTable(selectedTableId, customer)
+    }
+
+
+    override fun onCustomerListRetrieved(customerList: List<Customer>) {
+        recycler_view.adapter = CustomersRvAdapter(customerList, this)
+    }
+
+    override fun onCustomerListError() {
+        showRequestErrorMessage(getString(R.string.error_retrieving_customer_list))
+    }
+
+    override fun onTableReserved() {
+        finish()
+    }
+
+    override fun onTableReservingError() {
+        showRequestErrorMessage(getString(R.string.some_error_happen))
     }
 }

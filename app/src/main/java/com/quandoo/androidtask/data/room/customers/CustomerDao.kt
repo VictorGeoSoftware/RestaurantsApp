@@ -14,4 +14,7 @@ interface CustomerDao {
 
     @Query("SELECT * FROM CUSTOMERS_DB WHERE id = :customerId")
     fun getCustomerById(customerId: Long): Maybe<CustomerDto>
+
+    @Query("SELECT * FROM CUSTOMERS_DB")
+    fun getAllCustomers(): Maybe<List<CustomerDto>>
 }

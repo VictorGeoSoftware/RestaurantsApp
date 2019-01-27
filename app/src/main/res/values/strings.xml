@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Quandoo Task</string>
+    <string name="some_error_happen">Some error happen</string>
+    <string name="error_retrieving_customer_list">Error retrieving customer list</string>
 </resources>
