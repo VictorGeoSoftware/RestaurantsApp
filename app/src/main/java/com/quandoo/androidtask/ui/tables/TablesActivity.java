@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.quandoo.androidtask.App;
 import com.quandoo.androidtask.data.models.Customer;
 import com.quandoo.androidtask.ui.customers.CustomersActivity;
 import com.quandoo.androidtask.utils.AppStatus;
@@ -43,6 +44,7 @@ public class TablesActivity extends AppCompatActivity implements Logger {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((App) getApplication()).createPresenterComponent().inject(this);
         setContentView(R.layout.activity_main);
         setTitle("Tables");
 
@@ -135,6 +137,19 @@ public class TablesActivity extends AppCompatActivity implements Logger {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        syncTables();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ((App) getApplication()).releasePresenterComponent();
+    }
+
+
     @NotNull
     public static void syncReservations(@NotNull List<? extends Reservation> reservations) {
         PersistanceUtil.saveSerializable(new ArrayList<>(reservations), RESERVATIONS_FILE_NAME);
@@ -163,11 +178,6 @@ public class TablesActivity extends AppCompatActivity implements Logger {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        syncTables();
-    }
 
     private void syncTables() {
         // FIXME : >:) Muhahahahaha
