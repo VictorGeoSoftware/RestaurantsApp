@@ -15,6 +15,7 @@ class Table : Serializable {
         internal set
 
     var reservedBy: String? = null
+    var avatarImageReserve: String? = null
 
     override fun toString(): String {
         return "Table{" +

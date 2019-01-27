@@ -115,6 +115,7 @@ public class TablesActivity extends AppCompatActivity implements Logger {
 //                                        //find user from reservation
 //                                        if (customer.getId() == reservation.getUserId()) {
 //                                            //mark table as reserved
+        // TODO :: caution with that! I've included a new variable for storing reserver avatar image url, do not delete!
 //                                            table.setReservedBy(customer.getFirstName() + " " + customer.getLastName());
 //                                        }
 //                                    });
