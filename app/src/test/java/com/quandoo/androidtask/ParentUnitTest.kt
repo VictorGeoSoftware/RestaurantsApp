@@ -20,6 +20,7 @@ abstract class ParentUnitTest {
     @Component(modules = [AppModule::class, NetworkModule::class, DataManagerModule::class, DataBaseModule::class])
     interface TestNetworkComponent: NetworkComponent {
         fun inject(target: CustomersPresenterTest)
+        fun inject(target: TablesPresenterTest)
     }
 
 

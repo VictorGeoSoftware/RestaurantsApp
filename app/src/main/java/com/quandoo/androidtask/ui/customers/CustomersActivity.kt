@@ -43,6 +43,8 @@ class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.Custom
 
 
         recycler_view.layoutManager = LinearLayoutManager(this)
+
+        customersPresenter.view = this
         customersPresenter.getAllCustomers()
     }
 

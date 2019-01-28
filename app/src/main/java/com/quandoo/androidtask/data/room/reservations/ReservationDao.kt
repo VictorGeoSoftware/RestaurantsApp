@@ -18,4 +18,7 @@ interface ReservationDao {
 
     @Query("DELETE FROM RESERVATIONS_DB WHERE id = :reservationId")
     fun deleteReservation(reservationId: Long)
+
+    @Query("SELECT * FROM RESERVATIONS_DB")
+    fun getAllReservations(): Maybe<List<ReservationDto>>
 }

@@ -14,4 +14,7 @@ interface TablesDao {
 
     @Query("SELECT * FROM TABLES_DB WHERE id = :tableId")
     fun getTableById(tableId: Long): Maybe<TableDto>
+
+    @Query("SELECT * FROM TABLES_DB")
+    fun getAllTables(): Maybe<List<TableDto>>
 }

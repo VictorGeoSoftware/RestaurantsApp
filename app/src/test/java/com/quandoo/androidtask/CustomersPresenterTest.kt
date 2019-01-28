@@ -9,6 +9,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.quandoo.androidtask.data.DataManager
 import com.quandoo.androidtask.data.models.Customer
 import com.quandoo.androidtask.presenter.CustomersPresenter
+import com.quandoo.androidtask.utils.getMockCustomerList
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
@@ -40,26 +41,6 @@ class CustomersPresenterTest: ParentUnitTest() {
         val customersPresenter = CustomersPresenter(testScheduler, testScheduler, dataManager)
         customersPresenter.view = customersView
         return customersPresenter as T
-    }
-
-    private fun getMockCustomerList(): List<Customer> {
-        val customerListString = "[\n" +
-                "  {\n" +
-                "    \"first_name\": \"Marilyn\",\n" +
-                "    \"last_name\": \"Monroe\",\n" +
-                "    \"image_url\": \"https://s3-eu-west-1.amazonaws.com/quandoo-assessment/images/profile1.png\",\n" +
-                "    \"id\": 0\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"first_name\": \"Abraham\",\n" +
-                "    \"last_name\": \"Lincoln\",\n" +
-                "    \"image_url\": \"https://s3-eu-west-1.amazonaws.com/quandoo-assessment/images/profile2.png\",\n" +
-                "    \"id\": 1\n" +
-                "  }\n" +
-                "]"
-
-        val listType = object : TypeToken<List<Customer>>(){}.type
-        return Gson().fromJson(customerListString, listType)
     }
 
 

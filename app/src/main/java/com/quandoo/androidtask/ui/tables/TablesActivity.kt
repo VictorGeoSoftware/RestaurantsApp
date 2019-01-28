@@ -8,22 +8,27 @@ import com.quandoo.androidtask.App
 import com.quandoo.androidtask.R
 import com.quandoo.androidtask.data.models.Customer
 import com.quandoo.androidtask.data.models.Table
+import com.quandoo.androidtask.presenter.TablesPresenter
 import com.quandoo.androidtask.ui.customers.CustomersActivity
 import com.quandoo.androidtask.utils.AppStatus
 import com.quandoo.androidtask.utils.Logger
 import com.quandoo.androidtask.utils.PersistanceUtil
+import com.quandoo.androidtask.utils.showRequestErrorMessage
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import javax.inject.Inject
 
-open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableClickListener {
+open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableClickListener, TablesPresenter.TablesView {
     companion object {
-        val TABLES_FILE_NAME = "tables.bak"
+        val TABLES_FILE_NAME = "mTablesList.bak"
         val RESERVATIONS_FILE_NAME = "reservations.bak"
         val CUSTOMERS_FILE_NAME = "customers.bak"
     }
 
-    var tables = ArrayList<Table>()
-    lateinit var mTablesAdapter: TablesRvAdapter
+
+    @Inject lateinit var tablesPresenter: TablesPresenter
+    private var mTablesList = ArrayList<Table>()
+    private lateinit var mTablesAdapter: TablesRvAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,17 +38,23 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
         title = getString(R.string.tables)
 
         // 1.- retrieve table list
-        // 1.- check if DataBase is empty
-        // 1.- call to API
+            // 1.- check if DataBase is empty
+            // 1.- call to API
+
         // 2.- retrieve data
-        // 2.- populate data on view
-        // 1.- check whose tables are reserved
+            // 2.- populate data on view
+
+        // 3.- check whose mTablesList are reserved
 
         // Include- no internet connection method -> todo:: maybe in on error event
 
-        mTablesAdapter = TablesRvAdapter(tables, this)
+        mTablesAdapter = TablesRvAdapter(mTablesList, this)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = mTablesAdapter
+
+
+        tablesPresenter.view = this
+        tablesPresenter.retrieveTablesFromServer()
     }
 
     override fun onResume() {
@@ -55,6 +66,7 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
         super.onDestroy()
         (application as App).releasePresenterComponent()
     }
+
 
     override fun onTableItemClick(clickedTable: Table) {
         // todo:: use reservations db for checking table availability
@@ -76,6 +88,18 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
                     .createStartingIntent(clickedTable, this@TablesActivity))
         }
     }
+
+
+    override fun onTablesListReceived(tablesList: List<Table>) {
+        mTablesList.clear()
+        mTablesList.addAll(tablesList)
+        mTablesAdapter.notifyDataSetChanged()
+    }
+
+    override fun onTablesListError(exception: Throwable) {
+        showRequestErrorMessage(exception.message ?: getString(R.string.some_error_happen))
+    }
+
 
     private fun writeCustomersToFile(customers: List<Customer>) {
         PersistanceUtil.saveSerializable(ArrayList(customers), CUSTOMERS_FILE_NAME)

@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 
 class TestNetworkModule: NetworkModule() {
     override fun provideRestaurantRepository(retrofit: Retrofit): RestaurantService {
-        return super.provideRestaurantRepository(retrofit)
-//        return Mockito.mock(RestaurantService::class.java)
+//        return super.provideRestaurantRepository(retrofit)
+        return Mockito.mock(RestaurantService::class.java)
     }
 }
