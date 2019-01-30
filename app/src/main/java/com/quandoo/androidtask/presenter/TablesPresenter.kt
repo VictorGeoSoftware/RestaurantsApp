@@ -2,9 +2,7 @@ package com.quandoo.androidtask.presenter
 
 import com.quandoo.androidtask.data.DataManager
 import com.quandoo.androidtask.data.models.Table
-import io.reactivex.Observable
 import io.reactivex.Scheduler
-import java.util.function.BiFunction
 import javax.inject.Inject
 
 class TablesPresenter @Inject constructor(
@@ -16,11 +14,37 @@ class TablesPresenter @Inject constructor(
     interface TablesView {
         fun onTablesListReceived(tablesList: List<Table>)
         fun onTablesListError(exception: Throwable)
+        fun allDataIsLoaded()
+        fun errorLoadingAllData()
 
     }
 
     fun loadAllData() {
-        // todo :: complete function
+        // the logic has to be first check to DB and then retrieve from API
+        disposable.add(dataManager.loadAllData()
+                .observeOn(androidThread)
+                .subscribeOn(ioThread)
+                .subscribe({
+                    // after this interface all necessary data has to be requested
+                    view?.allDataIsLoaded()
+                }, {
+                    view?.errorLoadingAllData()
+                }))
+    }
+
+    fun getUpdatedTableList() {
+        disposable.add(dataManager.getUpdatedTableList()
+                .observeOn(androidThread)
+                .subscribeOn(ioThread)
+                .subscribe({
+                    view?.onTablesListReceived(it)
+                }, {
+                    view?.onTablesListError(it)
+                }))
+    }
+
+    fun deleteReservation(clickedTable: Table) {
+        dataManager.deleteReservationAndGetUpdatedList(clickedTable)
     }
 
     fun retrieveTablesFromServer() {
@@ -39,6 +63,7 @@ class TablesPresenter @Inject constructor(
         super.destroy()
         disposable.clear()
     }
+
 
 
 }

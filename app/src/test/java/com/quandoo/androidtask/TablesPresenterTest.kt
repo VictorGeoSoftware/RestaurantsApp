@@ -5,10 +5,13 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.quandoo.androidtask.api.RestaurantService
 import com.quandoo.androidtask.data.DataManager
+import com.quandoo.androidtask.data.models.Customer
+import com.quandoo.androidtask.data.models.Table
 import com.quandoo.androidtask.presenter.TablesPresenter
 import com.quandoo.androidtask.utils.getMockCustomerList
 import com.quandoo.androidtask.utils.getMockReservationList
 import com.quandoo.androidtask.utils.getMockTableList
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
@@ -42,21 +45,6 @@ class TablesPresenterTest: ParentUnitTest() {
     }
 
 
-    @Test
-    fun `should check dataBase for all necessary data, and retrieve all of it`() {
-        val customerList = getMockCustomerList()
-        val tablesList = getMockTableList()
-        val reservationList = getMockReservationList()
-
-        whenever(dataManager.getAllCustomers()).thenReturn(Observable.just(customerList))
-        whenever(dataManager.getAllTables()).thenReturn(Observable.just(tablesList))
-        whenever(dataManager.getAllReservations()).thenReturn(Observable.just(reservationList))
-
-        tablesPresenter.loadAllData()
-        testScheduler.triggerActions()
-
-
-    }
 
     @Test
     fun `should retrieve a whole list from API`() {
@@ -78,5 +66,39 @@ class TablesPresenterTest: ParentUnitTest() {
         testScheduler.triggerActions()
 
         verify(tablesView, times(1)).onTablesListError(exception)
+    }
+
+    @Test
+    fun `get all data for first time and have a correct response`() {
+        val mockedTableList = getMockTableList()
+        whenever(dataManager.getAllTablesFromDB()).thenReturn(Observable.just(ArrayList()))
+        whenever(dataManager.retrieveTablesFromServer()).thenReturn(Observable.just(mockedTableList))
+        whenever(dataManager.getAllTables()).thenReturn(Observable.just(mockedTableList))
+
+        val mockedCustomerList = getMockCustomerList()
+        whenever(dataManager.getAllCustomersFromDB()).thenReturn(Observable.just(ArrayList()))
+        whenever(dataManager.retrieveCustomersFromServer()).thenReturn(Observable.just(mockedCustomerList))
+        whenever(dataManager.getAllCustomers()).thenReturn(Observable.just(mockedCustomerList))
+
+        val mockedReservationList = getMockReservationList()
+        whenever(dataManager.getAllReservationsFromDB()).thenReturn(Observable.just(ArrayList()))
+        whenever(dataManager.retrieveReservationsFromServer()).thenReturn(Observable.just(mockedReservationList))
+        whenever(dataManager.getAllReservations()).thenReturn(Observable.just(mockedReservationList))
+
+        whenever(dataManager.loadAllData()).thenReturn(Completable.complete())
+
+        tablesPresenter.loadAllData()
+        testScheduler.triggerActions()
+
+        verify(tablesView, times(1)).allDataIsLoaded()
+    }
+
+    @Test
+    fun `retrieve all stored tables and show them up in tables activity list`() {
+        val mockedTableList = getMockTableList()
+        whenever(dataManager.getAllTables()).thenReturn(Observable.just(mockedTableList))
+
+        // todo :: this method has to include casting with reservation list!
+        tablesPresenter.getUpdatedTableList()
     }
 }

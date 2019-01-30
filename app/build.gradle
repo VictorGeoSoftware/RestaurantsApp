@@ -32,6 +32,11 @@ android {
     }
 }
 
+androidExtensions {
+    // For parcelize feature
+    experimental = true
+}
+
 dependencies {
 
     /*Retrofit */

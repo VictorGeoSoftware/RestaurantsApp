@@ -1,5 +1,6 @@
 package com.quandoo.androidtask.ui.customers
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +21,7 @@ class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.Custom
     companion object {
         const val EXTRA_TABLE_ID = "SELECTED_TABLE_ID"
         const val NON_EXISTING_TABLE_ID = -1L
+        const val CUSTOMERS_ACTIVITY_RESULT = 1001
 
         @JvmStatic
         fun createStartingIntent(clickedTable: Table, context: Context): Intent {
@@ -68,6 +70,7 @@ class CustomersActivity : AppCompatActivity(), Logger, CustomersRvAdapter.Custom
     }
 
     override fun onTableReserved() {
+        setResult(Activity.RESULT_OK)
         finish()
     }
 

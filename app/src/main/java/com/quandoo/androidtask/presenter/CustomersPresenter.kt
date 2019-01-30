@@ -31,7 +31,7 @@ class CustomersPresenter @Inject constructor(
     }
 
     fun getAllCustomers() {
-        disposable.add(dataManager.getAllCustomers()
+        disposable.add(dataManager.getAllCustomersFromDB()
                 .observeOn(androidThread)
                 .subscribeOn(ioThread)
                 .subscribe({

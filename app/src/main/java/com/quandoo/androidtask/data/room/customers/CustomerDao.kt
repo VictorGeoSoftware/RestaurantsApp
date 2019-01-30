@@ -12,8 +12,8 @@ interface CustomerDao {
     @Insert(onConflict = REPLACE)
     fun addCustomer(customerDto: CustomerDto)
 
-    @Query("SELECT * FROM CUSTOMERS_DB WHERE id = :customerId")
-    fun getCustomerById(customerId: Long): Maybe<CustomerDto>
+    @Query("SELECT * FROM CUSTOMERS_DB WHERE id = :id")
+    fun getCustomerById(id: Long): Maybe<CustomerDto>
 
     @Query("SELECT * FROM CUSTOMERS_DB")
     fun getAllCustomers(): Maybe<List<CustomerDto>>

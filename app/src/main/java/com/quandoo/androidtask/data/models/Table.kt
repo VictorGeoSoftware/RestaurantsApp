@@ -1,10 +1,11 @@
 package com.quandoo.androidtask.data.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
-import java.io.Serializable
-
-class Table : Serializable {
+@Parcelize
+class Table : Parcelable {
 
     @SerializedName("shape")
     var shape: String? = null

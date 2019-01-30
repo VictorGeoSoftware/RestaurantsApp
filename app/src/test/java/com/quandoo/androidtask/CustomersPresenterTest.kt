@@ -1,8 +1,6 @@
 package com.quandoo.androidtask
 
 import android.content.res.Resources
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
@@ -82,7 +80,7 @@ class CustomersPresenterTest: ParentUnitTest() {
     @Test
     fun `get all customers and display in a list`() {
         val mockedList = getMockCustomerList()
-        whenever(dataManager.getAllCustomers()).thenReturn(Observable.just(mockedList))
+        whenever(dataManager.getAllCustomersFromDB()).thenReturn(Observable.just(mockedList))
 
         customersPresenter.getAllCustomers()
         testScheduler.triggerActions()
@@ -92,7 +90,7 @@ class CustomersPresenterTest: ParentUnitTest() {
 
     @Test
     fun `get all customers and retrieve an error`() {
-        whenever(dataManager.getAllCustomers()).thenReturn(Observable.error(Resources.NotFoundException()))
+        whenever(dataManager.getAllCustomersFromDB()).thenReturn(Observable.error(Resources.NotFoundException()))
 
         customersPresenter.getAllCustomers()
         testScheduler.triggerActions()

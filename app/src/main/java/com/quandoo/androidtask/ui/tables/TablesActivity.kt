@@ -1,21 +1,22 @@
 package com.quandoo.androidtask.ui.tables
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.quandoo.androidtask.App
 import com.quandoo.androidtask.R
-import com.quandoo.androidtask.data.models.Customer
 import com.quandoo.androidtask.data.models.Table
 import com.quandoo.androidtask.presenter.TablesPresenter
 import com.quandoo.androidtask.ui.customers.CustomersActivity
+import com.quandoo.androidtask.ui.customers.CustomersActivity.Companion.CUSTOMERS_ACTIVITY_RESULT
 import com.quandoo.androidtask.utils.AppStatus
 import com.quandoo.androidtask.utils.Logger
-import com.quandoo.androidtask.utils.PersistanceUtil
+import com.quandoo.androidtask.utils.myTrace
 import com.quandoo.androidtask.utils.showRequestErrorMessage
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 import javax.inject.Inject
 
 open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableClickListener, TablesPresenter.TablesView {
@@ -23,10 +24,12 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
         val TABLES_FILE_NAME = "mTablesList.bak"
         val RESERVATIONS_FILE_NAME = "reservations.bak"
         val CUSTOMERS_FILE_NAME = "customers.bak"
+
+        const val TABLES_ACTIVITY_INSTANCE_STATE = "TABLES_ACTIVITY_INSTANCE_STATE"
     }
 
 
-    @Inject lateinit var tablesPresenter: TablesPresenter
+    @Inject lateinit var mTablesPresenter: TablesPresenter
     private var mTablesList = ArrayList<Table>()
     private lateinit var mTablesAdapter: TablesRvAdapter
 
@@ -48,18 +51,18 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
 
         // Include- no internet connection method -> todo:: maybe in on error event
 
+        if (savedInstanceState != null) {
+            mTablesList = savedInstanceState.getParcelableArrayList(TABLES_ACTIVITY_INSTANCE_STATE) ?: ArrayList()
+        } else {
+            mTablesPresenter.loadAllData()
+        }
+
         mTablesAdapter = TablesRvAdapter(mTablesList, this)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = mTablesAdapter
 
 
-        tablesPresenter.view = this
-        tablesPresenter.retrieveTablesFromServer()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        syncTables()
+        mTablesPresenter.view = this
     }
 
     override fun onDestroy() {
@@ -67,9 +70,30 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
         (application as App).releasePresenterComponent()
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putParcelableArrayList(TABLES_ACTIVITY_INSTANCE_STATE, mTablesList)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == CUSTOMERS_ACTIVITY_RESULT && resultCode == Activity.RESULT_OK) {
+            mTablesPresenter.getUpdatedTableList()
+            myTrace("onActivityResult - update list!")
+        }
+    }
+
+
+    override fun allDataIsLoaded() {
+        mTablesPresenter.getUpdatedTableList()
+    }
+
+    override fun errorLoadingAllData() {
+        showRequestErrorMessage(getString(R.string.some_error_happen))
+    }
 
     override fun onTableItemClick(clickedTable: Table) {
-        // todo:: use reservations db for checking table availability
         if (clickedTable.reservedBy != null) {
 
             //show dialog that removes the reservation
@@ -78,14 +102,13 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
                     .setPositiveButton(getText(R.string.yes)) { dialog, which ->
 
                         //Free table
-                        // todo:: use reservations db, deleting/including a new one
-                        clickedTable.reservedBy = null
-                        syncTables()
+                        mTablesPresenter.deleteReservation(clickedTable)
 
-                    }.setNegativeButton("No", null).show()
+                    }.setNegativeButton(getString(R.string.dialog_no), null).show()
         } else {
-            startActivity(CustomersActivity
-                    .createStartingIntent(clickedTable, this@TablesActivity))
+            startActivityForResult(
+                    CustomersActivity.createStartingIntent(clickedTable, this@TablesActivity),
+                    CUSTOMERS_ACTIVITY_RESULT)
         }
     }
 
@@ -101,16 +124,15 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
     }
 
 
-    private fun writeCustomersToFile(customers: List<Customer>) {
-        PersistanceUtil.saveSerializable(ArrayList(customers), CUSTOMERS_FILE_NAME)
-    }
+//    private fun writeCustomersToFile(customers: List<Customer>) {
+//        PersistanceUtil.saveSerializable(ArrayList(customers), CUSTOMERS_FILE_NAME)
+//    }
 
 
-    private fun syncTables() {
-        // FIXME : >:) Muhahahahaha
-        // TODO :: keep just in case, but it would not be necessary
-        mTablesAdapter.notifyDataSetChanged()
-    }
+//    private fun syncTables() {
+//        // FIXME : >:) Muhahahahaha
+//        mTablesAdapter.notifyDataSetChanged()
+//    }
 
     private fun showNoConnectionDialog() {
         if (!AppStatus.getInstance(applicationContext).isOnline) {
