@@ -16,7 +16,6 @@ class TablesPresenter @Inject constructor(
         fun onTablesListError(exception: Throwable)
         fun allDataIsLoaded()
         fun errorLoadingAllData()
-
     }
 
     fun loadAllData() {
@@ -44,7 +43,14 @@ class TablesPresenter @Inject constructor(
     }
 
     fun deleteReservation(clickedTable: Table) {
-        dataManager.deleteReservationAndGetUpdatedList(clickedTable)
+        disposable.add(dataManager.deleteReservationAndGetUpdatedList(clickedTable)
+                .observeOn(androidThread)
+                .subscribeOn(ioThread)
+                .subscribe({
+                    view?.onTablesListReceived(it)
+                }, {
+                    view?.onTablesListError(it)
+                }))
     }
 
     fun retrieveTablesFromServer() {
@@ -63,7 +69,4 @@ class TablesPresenter @Inject constructor(
         super.destroy()
         disposable.clear()
     }
-
-
-
 }

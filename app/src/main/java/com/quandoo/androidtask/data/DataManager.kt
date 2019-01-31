@@ -9,10 +9,9 @@ import com.quandoo.androidtask.data.room.AppDataBase
 import com.quandoo.androidtask.data.room.customers.CustomerDto
 import com.quandoo.androidtask.data.room.reservations.ReservationDto
 import com.quandoo.androidtask.data.room.tables.TableDto
-import com.quandoo.androidtask.utils.myTrace
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 
 
@@ -20,30 +19,23 @@ class DataManager(private val restaurantService: RestaurantService, private val 
 
     fun getUpdatedTableList(): Observable<List<Table>> {
         return getAllReservations()
-                .flatMap { reservations ->
-
-                    reservations.map { reservation ->
-                        myTrace("reservations -> to search :: ${reservation.tableId} || ${reservation.userId}")
-                        val tableDto = appDataBase.tableDao().getTableById(reservation.tableId)
-                        val customerDto = appDataBase.customerDao().getCustomerById(reservation.userId)
-
-                        tableDto.flatMapCompletable {
-                            Completable.fromAction { myTrace("reservations -> find user and table - found table $it") }
-                        }
-
-                        customerDto.flatMapCompletable {
-                            Completable.fromAction { myTrace("reservations -> find user and table - found customer $it") }
-                        }
-
-                        Maybe.zip(tableDto, customerDto, BiFunction<TableDto, CustomerDto, Unit> { table, customer ->
-                            myTrace("reservations -> find user and table $table || $customer")
-                            val reservedBy = customer.firstName + " " + customer.lastName
-                            val newTable = TableDto(table.id, table.shape, reservedBy, customer.imageUrl)
-                            appDataBase.tableDao().addTable(newTable)
-                        })
-                    }
-                    getAllTables()
+                .flatMapIterable { reservations ->
+                    reservations
                 }
+                .flatMapCompletable {
+                    findReservedTableByCustomer(it.tableId, it.userId).toCompletable()
+                }
+                .andThen(getAllTables())
+    }
+
+    private fun findReservedTableByCustomer(tableId: Long, customerId: Long): Single<Unit> {
+        return Single.zip(findCustomerById(customerId),
+                findTableById(tableId),
+                BiFunction<CustomerDto, TableDto, Unit> { customer, table ->
+                    val reservedBy = customer.firstName + " " + customer.lastName
+                    val newTable = TableDto(table.id, table.shape, reservedBy, customer.imageUrl)
+                    appDataBase.tableDao().addTable(newTable)
+        })
     }
 
     fun reserveTable(selectedTableId: Long, customer: Customer): Completable {
@@ -60,10 +52,11 @@ class DataManager(private val restaurantService: RestaurantService, private val 
 
     fun deleteReservationAndGetUpdatedList(clickedTable: Table): Observable<List<Table>> {
         return Observable.fromCallable {
-            clickedTable.shape = null
-            clickedTable.avatarImageReserve = null
-            clickedTable.reservedBy = null
-            appDataBase.tableDao().addTable(clickedTable.toTableDto())
+
+            appDataBase.reservationDao().deleteReservationByTable(clickedTable.id)
+
+            val freedTable = TableDto(clickedTable.id, null, null, null)
+            appDataBase.tableDao().addTable(freedTable)
         }.flatMap {
             getUpdatedTableList()
         }
@@ -79,7 +72,6 @@ class DataManager(private val restaurantService: RestaurantService, private val 
     fun getAllCustomers(): Observable<List<Customer>> {
         return getAllCustomersFromDB()
                 .flatMap { customerList ->
-                    myTrace("getAllCustomersFromDB - count :: ${customerList.size}")
                     if (customerList.isEmpty()) {
                         retrieveCustomersFromServer()
                     } else {
@@ -116,7 +108,7 @@ class DataManager(private val restaurantService: RestaurantService, private val 
     fun getAllTables(): Observable<List<Table>> {
         return getAllTablesFromDB()
                 .flatMap { tables ->
-                    myTrace("getAllTables - count :: ${tables.size}")
+
                     if (tables.isEmpty()) {
                         retrieveTablesFromServer()
                     } else {
@@ -154,7 +146,10 @@ class DataManager(private val restaurantService: RestaurantService, private val 
     fun getAllReservations(): Observable<List<Reservation>> {
         return getAllReservationsFromDB()
                 .flatMap { reservations ->
-                    if (reservations.isEmpty()) {
+                    val tables = appDataBase.tableDao().getItemCount()
+                    val customers = appDataBase.customerDao().getItemCount()
+
+                    if (tables == 0 && customers == 0) {
                         retrieveReservationsFromServer()
                     } else {
                         Observable.just(reservations)
@@ -187,7 +182,13 @@ class DataManager(private val restaurantService: RestaurantService, private val 
                 .toList().toObservable()
     }
 
+    private fun findTableById(tableId: Long): Single<TableDto> {
+        return appDataBase.tableDao().getTableById(tableId).toSingle()
+    }
 
+    private fun findCustomerById(customerId: Long): Single<CustomerDto> {
+        return appDataBase.customerDao().getCustomerById(customerId).toSingle()
+    }
 
 
 }

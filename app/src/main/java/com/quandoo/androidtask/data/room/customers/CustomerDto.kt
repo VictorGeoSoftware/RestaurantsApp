@@ -8,7 +8,7 @@ import com.quandoo.androidtask.data.Constants.Companion.CUSTOMERS_DB
 
 @Entity(tableName = CUSTOMERS_DB)
 class CustomerDto (
-        @PrimaryKey @SerializedName("id") val id: Long,
+        @PrimaryKey @SerializedName("id") val id: Int,
         @SerializedName("first_name") val firstName: String,
         @SerializedName("last_name") val lastName: String,
         @SerializedName("image_url") val imageUrl: String)

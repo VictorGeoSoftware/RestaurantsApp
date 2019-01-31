@@ -14,7 +14,6 @@ import com.quandoo.androidtask.ui.customers.CustomersActivity
 import com.quandoo.androidtask.ui.customers.CustomersActivity.Companion.CUSTOMERS_ACTIVITY_RESULT
 import com.quandoo.androidtask.utils.AppStatus
 import com.quandoo.androidtask.utils.Logger
-import com.quandoo.androidtask.utils.myTrace
 import com.quandoo.androidtask.utils.showRequestErrorMessage
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -39,17 +38,6 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
         (application as App).createPresenterComponent().inject(this)
         setContentView(R.layout.activity_main)
         title = getString(R.string.tables)
-
-        // 1.- retrieve table list
-            // 1.- check if DataBase is empty
-            // 1.- call to API
-
-        // 2.- retrieve data
-            // 2.- populate data on view
-
-        // 3.- check whose mTablesList are reserved
-
-        // Include- no internet connection method -> todo:: maybe in on error event
 
         if (savedInstanceState != null) {
             mTablesList = savedInstanceState.getParcelableArrayList(TABLES_ACTIVITY_INSTANCE_STATE) ?: ArrayList()
@@ -80,7 +68,6 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
 
         if (requestCode == CUSTOMERS_ACTIVITY_RESULT && resultCode == Activity.RESULT_OK) {
             mTablesPresenter.getUpdatedTableList()
-            myTrace("onActivityResult - update list!")
         }
     }
 
@@ -91,15 +78,15 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
 
     override fun errorLoadingAllData() {
         showRequestErrorMessage(getString(R.string.some_error_happen))
+        showNoConnectionDialog()
     }
 
     override fun onTableItemClick(clickedTable: Table) {
-        if (clickedTable.reservedBy != null) {
-
+        if (!clickedTable.reservedBy.isNullOrEmpty()) {
             //show dialog that removes the reservation
             val builder = AlertDialog.Builder(this@TablesActivity)
             builder.setMessage(getString(R.string.reserve_table_message))
-                    .setPositiveButton(getText(R.string.yes)) { dialog, which ->
+                    .setPositiveButton(getText(R.string.yes)) { _, _ ->
 
                         //Free table
                         mTablesPresenter.deleteReservation(clickedTable)
@@ -122,17 +109,6 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
     override fun onTablesListError(exception: Throwable) {
         showRequestErrorMessage(exception.message ?: getString(R.string.some_error_happen))
     }
-
-
-//    private fun writeCustomersToFile(customers: List<Customer>) {
-//        PersistanceUtil.saveSerializable(ArrayList(customers), CUSTOMERS_FILE_NAME)
-//    }
-
-
-//    private fun syncTables() {
-//        // FIXME : >:) Muhahahahaha
-//        mTablesAdapter.notifyDataSetChanged()
-//    }
 
     private fun showNoConnectionDialog() {
         if (!AppStatus.getInstance(applicationContext).isOnline) {

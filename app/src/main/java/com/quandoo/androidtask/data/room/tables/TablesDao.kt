@@ -17,4 +17,7 @@ interface TablesDao {
 
     @Query("SELECT * FROM TABLES_DB")
     fun getAllTables(): Maybe<List<TableDto>>
+
+    @Query("SELECT COUNT(`shape`) FROM TABLES_DB")
+    fun getItemCount(): Int
 }

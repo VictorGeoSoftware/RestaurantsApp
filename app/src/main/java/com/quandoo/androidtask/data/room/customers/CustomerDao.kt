@@ -17,4 +17,7 @@ interface CustomerDao {
 
     @Query("SELECT * FROM CUSTOMERS_DB")
     fun getAllCustomers(): Maybe<List<CustomerDto>>
+
+    @Query("SELECT COUNT(`id`) FROM CUSTOMERS_DB")
+    fun getItemCount(): Int
 }

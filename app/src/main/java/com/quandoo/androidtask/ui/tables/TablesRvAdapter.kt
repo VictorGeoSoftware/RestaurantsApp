@@ -44,16 +44,15 @@ class TablesRvAdapter (
 
     class TableViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(table: Table, clickListener: TableClickListener) = with(itemView) {
+
             tableId.text = table.id.toString()
 
-            //TODO : Set name and color depending on reservation status
-            if (table.reservedBy != null) {
+            if (!table.reservedBy.isNullOrEmpty()) {
                 reservingCustomerName.text = table.reservedBy
                 reservingCustomerName.setTextColor(Color.RED)
 
                 //load reserving user image
-                table.avatarImageReserve?.run {
-                    // TODO :: avatarImageReserver -> check when TablesActivity refactoring!!
+                if (!table.avatarImageReserve.isNullOrEmpty()) {
                     Picasso.get().load(table.avatarImageReserve).into(avatarImageView)
                     avatarImageView.visibility = View.VISIBLE
                 }
@@ -65,7 +64,7 @@ class TablesRvAdapter (
             }
 
 
-            tableImageView.setImageResource(getTableShapeImageResourceId(table.shape!!))
+            tableImageView.setImageResource(getTableShapeImageResourceId(table.shape ?: ""))
             itemView.setOnClickListener { v -> clickListener.onTableItemClick(table) }
         }
 

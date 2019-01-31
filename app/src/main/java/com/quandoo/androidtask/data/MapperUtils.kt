@@ -12,7 +12,7 @@ import com.quandoo.androidtask.data.room.tables.TableDto
 
 fun CustomerDto.toCustomer(): Customer {
     val customer = Customer()
-    customer.id = this.id
+    customer.id = this.id.toLong()
     customer.firstName = this.firstName
     customer.lastName = this.lastName
     customer.imageUrl = this.imageUrl
@@ -31,15 +31,17 @@ fun CustomerResp.toCustomer(): Customer {
 }
 
 fun CustomerResp.toCustomerDto(): CustomerDto {
-    return CustomerDto(this.id, this.firstName, this.lastName, this.imageUrl)
+    return CustomerDto(this.id.toInt(), this.firstName, this.lastName, this.imageUrl)
 }
 
 
 
 fun TableDto.toTable(): Table {
     val table = Table()
-    table.id = this.id.toLong()
+    table.id = this.id
     table.shape = this.shape
+    table.reservedBy = this.reservedBy
+    table.avatarImageReserve = this.avatarImageReserve
 
     return table
 }
