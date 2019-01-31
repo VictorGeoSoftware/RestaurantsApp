@@ -7,4 +7,6 @@
     <string name="reserve_table_message">Do you want to free the table?</string>
     <string name="yes">Yes</string>
     <string name="dialog_no">No</string>
+    <string name="dialog_no_internet_connection">No internet connection!</string>
+    <string name="close_app">Close App</string>
 </resources>

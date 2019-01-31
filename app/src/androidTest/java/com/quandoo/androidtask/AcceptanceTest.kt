@@ -15,9 +15,11 @@ import com.quandoo.androidtask.ui.tables.TablesActivity
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.first
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.withHolderTablesView
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.withRecyclerView
+import com.quandoo.androidtask.utils.RecyclerViewItemCountAssertion.Companion.withItemCount
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.Matchers.greaterThan
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -151,4 +153,46 @@ class AcceptanceTest {
 
     }
 
+    @Test
+    fun offLineModeFirstTimeTest() {
+        // No internet connection dialog is visible
+        onView(withText(R.string.dialog_no_internet_connection)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun offLineModeAlreadyCachedDataTest() {
+        // First screen appears
+        onView(withText("Tables")).check(matches(isDisplayed()))
+
+        // List of tables visible
+        onView(withId(R.id.recycler_view)).check(matches(isDisplayed()))
+
+        // List of tables is fulfilled
+        onView(withId(R.id.recycler_view)).check(withItemCount(greaterThan(0)))
+    }
+
+    @Test
+    fun tableVisualFeedBackTest() {
+        //App is open
+        onView(withText("Tables")).check(matches(isDisplayed()))
+
+        // List of tables visible
+        onView(withId(R.id.recycler_view)).check(matches(isDisplayed()))
+
+        //There is at least one reserved table
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(first(not(withHolderTablesView("Free")))))
+
+        // THEN:
+
+        val reservedTablePosition = mTablesActivity.getFirstReservedTable()
+
+        // Make sure reserved table has a name of reserving customer
+        onView(withRecyclerView(R.id.recycler_view).atPosition(reservedTablePosition))
+                .check(matches(hasDescendant(withText("Marilyn Monroe"))))
+
+        // Make sure reserved table has an image of reserving customer
+        onView(withRecyclerView(R.id.recycler_view).atPosition(reservedTablePosition))
+                .check(matches(hasDescendant(withId(R.id.avatarImageView))))
+    }
 }

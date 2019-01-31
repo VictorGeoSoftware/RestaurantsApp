@@ -109,9 +109,9 @@ open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableCl
     private fun showNoConnectionDialog() {
         if (!AppStatus.getInstance(applicationContext).isOnline) {
             val builder = AlertDialog.Builder(this)
-            builder.setMessage("No internet connection!")
+            builder.setMessage(getString(R.string.dialog_no_internet_connection))
                     .setCancelable(false)
-                    .setPositiveButton("Close App") { dialog, id -> finish() }
+                    .setPositiveButton(getText(R.string.close_app)) { _, _ -> finish() }
             val alert = builder.create()
             alert.show()
         }
