@@ -20,10 +20,6 @@ import javax.inject.Inject
 
 open class TablesActivity : AppCompatActivity(), Logger, TablesRvAdapter.TableClickListener, TablesPresenter.TablesView {
     companion object {
-        val TABLES_FILE_NAME = "mTablesList.bak"
-        val RESERVATIONS_FILE_NAME = "reservations.bak"
-        val CUSTOMERS_FILE_NAME = "customers.bak"
-
         const val TABLES_ACTIVITY_INSTANCE_STATE = "TABLES_ACTIVITY_INSTANCE_STATE"
     }
 

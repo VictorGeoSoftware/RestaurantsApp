@@ -12,13 +12,9 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import com.quandoo.androidtask.ui.tables.TablesActivity
-import com.quandoo.androidtask.ui.tables.TablesActivity.Companion.CUSTOMERS_FILE_NAME
-import com.quandoo.androidtask.ui.tables.TablesActivity.Companion.RESERVATIONS_FILE_NAME
-import com.quandoo.androidtask.ui.tables.TablesActivity.Companion.TABLES_FILE_NAME
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.first
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.withHolderTablesView
 import com.quandoo.androidtask.utils.EspressoCustomMarchers.Companion.withRecyclerView
-import com.quandoo.androidtask.utils.PersistanceUtil
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import org.hamcrest.CoreMatchers.not
@@ -46,11 +42,6 @@ class AcceptanceTest {
 
     @Before
     fun setup() {
-
-        //clear cached state
-        PersistanceUtil.removeSerializable(TABLES_FILE_NAME)
-        PersistanceUtil.removeSerializable(CUSTOMERS_FILE_NAME)
-        PersistanceUtil.removeSerializable(RESERVATIONS_FILE_NAME)
 
         //make espresso wait for RXJava
         RxJavaPlugins.setIoSchedulerHandler { Schedulers.from(AsyncTask.THREAD_POOL_EXECUTOR) }
