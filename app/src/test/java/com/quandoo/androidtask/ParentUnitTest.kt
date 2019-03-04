@@ -2,6 +2,7 @@ package com.quandoo.androidtask
 
 import com.quandoo.androidtask.dagger.TestAppModule
 import com.quandoo.androidtask.dagger.TestDataBaseModule
+import com.quandoo.androidtask.dagger.TestDataManagerModule
 import com.quandoo.androidtask.dagger.TestNetworkModule
 import com.quandoo.androidtask.dagger.components.NetworkComponent
 import com.quandoo.androidtask.dagger.modules.AppModule
@@ -30,6 +31,7 @@ abstract class ParentUnitTest {
                 .appModule(TestAppModule())
                 .networkModule(TestNetworkModule())
                 .dataBaseModule(TestDataBaseModule())
+                .dataManagerModule(TestDataManagerModule())
                 .build()
     }
 

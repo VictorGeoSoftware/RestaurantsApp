@@ -1,25 +1,36 @@
 package com.quandoo.androidtask
 
 import android.content.res.Resources
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockito_kotlin.*
+import com.quandoo.androidtask.api.RestaurantService
 import com.quandoo.androidtask.data.DataManager
 import com.quandoo.androidtask.data.models.Customer
+import com.quandoo.androidtask.data.room.AppDataBase
+import com.quandoo.androidtask.data.room.tables.TablesDao
 import com.quandoo.androidtask.presenter.CustomersPresenter
 import com.quandoo.androidtask.utils.getMockCustomerList
+import com.quandoo.androidtask.utils.myTrace
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
+import javax.inject.Inject
 
 @RunWith(MockitoJUnitRunner::class)
 class CustomersPresenterTest: ParentUnitTest() {
-    @Mock lateinit var dataManager: DataManager
+//    @Mock lateinit var dataManager: DataManager
+
+    @Mock lateinit var tablesDao: TablesDao
+    @Inject lateinit var appDataBase: AppDataBase
+    @Inject lateinit var restaurantService: RestaurantService
+    lateinit var dataManager: DataManager
     @Mock lateinit var customersView: CustomersPresenter.CustomersView
 
     private lateinit var testScheduler: TestScheduler
@@ -36,6 +47,7 @@ class CustomersPresenterTest: ParentUnitTest() {
     }
 
     override fun <T> createMockedPresenter(): T {
+        dataManager = DataManager(restaurantService, appDataBase)
         val customersPresenter = CustomersPresenter(testScheduler, testScheduler, dataManager)
         customersPresenter.view = customersView
         return customersPresenter as T
@@ -52,6 +64,10 @@ class CustomersPresenterTest: ParentUnitTest() {
         sadCostumer.lastName= "Palma"
         sadCostumer.imageUrl = ""
 
+        // TODO :: it's right, but review the WrongTypeOfReturnValue
+        myTrace("appDataBase instance :: $appDataBase")
+        whenever(appDataBase.tableDao()).thenReturn(tablesDao)
+        whenever(appDataBase.tableDao().getTableById(unFoundTableId)).doReturn(Maybe.empty())
         whenever(dataManager.reserveTable(unFoundTableId, sadCostumer)).thenReturn(Completable.error(Resources.NotFoundException("")))
 
         customersPresenter.reserveTable(unFoundTableId, sadCostumer)

@@ -8,7 +8,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DataManagerModule {
+open class DataManagerModule {
 
     @Provides
     @Singleton

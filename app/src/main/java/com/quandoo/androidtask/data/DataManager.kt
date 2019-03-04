@@ -9,6 +9,7 @@ import com.quandoo.androidtask.data.room.AppDataBase
 import com.quandoo.androidtask.data.room.customers.CustomerDto
 import com.quandoo.androidtask.data.room.reservations.ReservationDto
 import com.quandoo.androidtask.data.room.tables.TableDto
+import com.quandoo.androidtask.utils.myTrace
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -39,6 +40,9 @@ class DataManager(private val restaurantService: RestaurantService, private val 
     }
 
     fun reserveTable(selectedTableId: Long, customer: Customer): Completable {
+        myTrace("appDataBase instance :: $appDataBase")
+        myTrace("appDataBase tableDao instance :: ${appDataBase.tableDao()}")
+
         return appDataBase.tableDao().getTableById(selectedTableId)
                 .flatMapCompletable { table: TableDto ->
 
