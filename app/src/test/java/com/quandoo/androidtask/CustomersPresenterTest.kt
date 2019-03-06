@@ -1,24 +1,24 @@
 package com.quandoo.androidtask
 
 import android.content.res.Resources
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
 import com.quandoo.androidtask.api.RestaurantService
 import com.quandoo.androidtask.data.DataManager
 import com.quandoo.androidtask.data.models.Customer
 import com.quandoo.androidtask.data.room.AppDataBase
+import com.quandoo.androidtask.data.room.reservations.ReservationDao
 import com.quandoo.androidtask.data.room.tables.TablesDao
 import com.quandoo.androidtask.presenter.CustomersPresenter
 import com.quandoo.androidtask.utils.getMockCustomerList
-import com.quandoo.androidtask.utils.myTrace
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import javax.inject.Inject
@@ -28,6 +28,7 @@ class CustomersPresenterTest: ParentUnitTest() {
 //    @Mock lateinit var dataManager: DataManager
 
     @Mock lateinit var tablesDao: TablesDao
+    @Mock lateinit var reservationDao: ReservationDao
     @Inject lateinit var appDataBase: AppDataBase
     @Inject lateinit var restaurantService: RestaurantService
     lateinit var dataManager: DataManager
@@ -64,11 +65,9 @@ class CustomersPresenterTest: ParentUnitTest() {
         sadCostumer.lastName= "Palma"
         sadCostumer.imageUrl = ""
 
-        // TODO :: it's right, but review the WrongTypeOfReturnValue
-        myTrace("appDataBase instance :: $appDataBase")
+        // TODO :: change repo to my GitHub!!
         whenever(appDataBase.tableDao()).thenReturn(tablesDao)
-        whenever(appDataBase.tableDao().getTableById(unFoundTableId)).doReturn(Maybe.empty())
-        whenever(dataManager.reserveTable(unFoundTableId, sadCostumer)).thenReturn(Completable.error(Resources.NotFoundException("")))
+        whenever(appDataBase.tableDao().getTableById(unFoundTableId)).thenReturn(Maybe.error(Resources.NotFoundException()))
 
         customersPresenter.reserveTable(unFoundTableId, sadCostumer)
         testScheduler.triggerActions()

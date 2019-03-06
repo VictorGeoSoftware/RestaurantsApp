@@ -40,9 +40,6 @@ class DataManager(private val restaurantService: RestaurantService, private val 
     }
 
     fun reserveTable(selectedTableId: Long, customer: Customer): Completable {
-        myTrace("appDataBase instance :: $appDataBase")
-        myTrace("appDataBase tableDao instance :: ${appDataBase.tableDao()}")
-
         return appDataBase.tableDao().getTableById(selectedTableId)
                 .flatMapCompletable { table: TableDto ->
 
